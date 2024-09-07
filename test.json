@@ -1,0 +1,70 @@
+{
+  "status": [
+    {
+      "id": 1,
+      "title": "pending"
+    },
+    {
+      "id": 2,
+      "title": "processing"
+    },
+    {
+      "id": 3,
+      "title": "cancelled"
+    },
+    {
+      "id": 4,
+      "title": "completed"
+    }
+  ],
+  "pole": [
+    {
+      "id": 1,
+      "type": "AAA",
+      "product_number": "123",
+      "manufacturing_date": "2015-02-02",
+      "barcode": "123",
+      "photo_url": "http://example.com/pole1.jpg"
+    },
+    {
+      "id": 2,
+      "type": "BBB",
+      "product_number": "456",
+      "manufacturing_date": "2016-03-03",
+      "barcode": "456",
+      "photo_url": "http://example.com/pole2.jpg"
+    },
+    {
+      "id": 3,
+      "type": "CCC",
+      "product_number": "789",
+      "manufacturing_date": "2017-04-04",
+      "barcode": "789",
+      "photo_url": "http://example.com/pole3.jpg"
+    }
+  ],
+  "location": [
+    {
+      "id": 1,
+      "name": "UP3 Ponorogo",
+      "coordinate": {
+        "latitude": 0,
+        "longitude": 0
+      }
+    }
+  ],
+  "vendor": [
+    {
+      "id": 1,
+      "name": "Vendor A",
+      "contact_person": "John Doe",
+      "phone_number": "08123456789"
+    },
+    {
+      "id": 2,
+      "name": "Vendor B",
+      "contact_person": "Jane Smith",
+      "phone_number": "08987654321"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"  // Replace with your database provider
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Pole {
+  id                Int      @id @default(autoincrement())
+  type              String
+  productNumber     String
+  manufacturingDate DateTime
+  barcode           String
+  tasks             Task[]
+}
+
+model Status {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  status    String
+  tasks     Task[]
+}
+
+model Location {
+  id         Int      @id @default(autoincrement())
+  name       String
+  latitude   String
+  longitude  String
+  tasks      Task[]
+}
+
+model Vendor {
+  id      Int     @id @default(autoincrement())
+  name    String
+  drivers Driver[]
+  tasks   Task[]
+}
+
+model Driver {
+  id        Int      @id @default(autoincrement())
+  name      String
+  plate     String
+  vendorId  Int
+  vendor    Vendor   @relation(fields: [vendorId], references: [id])
+  tasks     Task[]
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  name      String
+  photoUrl  String?
+  date      DateTime @default(now())
+  statusId  Int
+  poleId    Int
+  locationId Int
+  vendorId  Int
+  driverId  Int
+
+  status    Status   @relation(fields: [statusId], references: [id])
+  pole      Pole     @relation(fields: [poleId], references: [id])
+  location  Location @relation(fields: [locationId], references: [id])
+  vendor    Vendor   @relation(fields: [vendorId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id])
+
+  @@index([statusId])
+  @@index([poleId])
+  @@index([locationId])
+  @@index([vendorId])
+  @@index([driverId])
+}
