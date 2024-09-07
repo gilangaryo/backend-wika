@@ -5,9 +5,9 @@ const QRCode = require('qrcode');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yaml');
+// const swaggerUi = require('swagger-ui-express');
+// // const YAML = require('yamljs');
+// // const swaggerDocument = YAML.load('./swagger.yaml');
 
 const PORT = process.env.PORT || 5002;
 const app = express();
@@ -61,7 +61,7 @@ app.get('/api', (req, res) => {
 
 
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api/users", userController);
 app.use("/api/poles", poleController);
