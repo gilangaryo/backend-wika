@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ",
     "start": "node index.js",
-    "build": "npm install && prisma migrate dev && prisma db seed"
+    "build": "npm install",
+    "buildku": "npm install && prisma migrate dev && prisma db seed"
   },
   "author": "",
   "license": "ISC",
