@@ -3,6 +3,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const QRCode = require('qrcode');
 const dotenv = require('dotenv');
+const ErrorHandler = require('./middleware/errorHandlers');
+
 dotenv.config();
 
 // const swaggerUi = require('swagger-ui-express');
@@ -17,9 +19,12 @@ app.use(morgan('dev'))
 app.use(morgan(':date[web]'))
 app.use(cors());
 
+
 const userController = require("./route/user/user.controller.js");
 const poleController = require("./route/pole/pole.controller.js");
 const taskController = require("./route/task/task.controller.js");
+const vendorController = require("./route/vendor/vendor.controller.js");
+const driverController = require("./route/driver/driver.controller.js");
 
 
 app.get('/', (req, res) => {
@@ -66,21 +71,14 @@ app.get('/api', (req, res) => {
 app.use("/api/users", userController);
 app.use("/api/poles", poleController);
 app.use("/api/tasks", taskController);
+app.use("/api/vendor", vendorController);
+app.use("/api/driver", driverController);
 
 
-
-
-app.get('/api/generateQR', async (req, res) => {
-    try {
-        const id = req.query.id;
-        const qrCodeImage = await QRCode.toDataURL(id);
-        res.send(`<img src="${qrCodeImage}" alt="QR Code"/>`);
-    } catch (err) {
-        console.error('Error generating QR code:', err);
-        res.status(500).send('Internal Server Error');
-    }
+app.use(ErrorHandler);
+app.use((req, res, next) => {
+    res.status(404).json({ error: 'API route not found' });
 });
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -4,78 +4,131 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"  // Replace with your database provider
+  provider = "postgresql"  
   url      = env("DATABASE_URL")
 }
 
+
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  role      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Pole {
-  id                Int      @id @default(autoincrement())
-  type              String
-  productNumber     String
-  manufacturingDate DateTime
-  barcode           String
-  tasks             Task[]
-}
-
-model Status {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime @default(now())
-  status    String
-  tasks     Task[]
-}
-
-model Location {
-  id         Int      @id @default(autoincrement())
-  name       String
-  latitude   String
-  longitude  String
-  tasks      Task[]
+  userId       Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email        String   @unique
+  phone        String
+  role         String
+  password     String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
 }
 
 model Vendor {
-  id      Int     @id @default(autoincrement())
-  name    String
-  drivers Driver[]
-  tasks   Task[]
+  vendorId    Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  phone       String
+  description String
+  location    String
+  isDeleted   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  orders      Order[]
+  drivers     Driver[]
 }
 
 model Driver {
-  id        Int      @id @default(autoincrement())
-  name      String
-  plate     String
-  vendorId  Int
-  vendor    Vendor   @relation(fields: [vendorId], references: [id])
-  tasks     Task[]
+  driverId     Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  phone        String
+  password     String
+  licensePlate String
+  isDeleted    Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  vendorId     Int
+  vendor       Vendor   @relation(fields: [vendorId], references: [vendorId])
+  orders       Order[]
 }
 
-model Task {
-  id        Int      @id @default(autoincrement())
-  name      String
-  photoUrl  String?
-  date      DateTime @default(now())
-  statusId  Int
-  poleId    Int
-  locationId Int
-  vendorId  Int
-  driverId  Int
+model Order {
+  orderId     Int      @id @default(autoincrement())
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  status    Status   @relation(fields: [statusId], references: [id])
-  pole      Pole     @relation(fields: [poleId], references: [id])
-  location  Location @relation(fields: [locationId], references: [id])
-  vendor    Vendor   @relation(fields: [vendorId], references: [id])
-  driver    Driver   @relation(fields: [driverId], references: [id])
+  vendorId    Int
+  vendor      Vendor   @relation(fields: [vendorId], references: [vendorId])
 
-  @@index([statusId])
-  @@index([poleId])
-  @@index([locationId])
-  @@index([vendorId])
-  @@index([driverId])
+  driverId    Int?
+  driver      Driver?  @relation(fields: [driverId], references: [driverId])
+
+  trackings   Tracking[]
+  review      Review?
+  poles       Pole[]
 }
+
+model Pole {
+  poleId       Int      @id @default(autoincrement())
+  type         String
+  uniqueCode   String   @unique
+  numberProduct Int
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orderId      Int
+  order        Order    @relation(fields: [orderId], references: [orderId])
+}
+
+model Tracking {
+  trackingId  Int      @id @default(autoincrement())
+  status      String   // Enum can be used, but here we keep it as string
+  description String
+  latitude    Float
+  longitude   Float
+  licensePlate String
+  picture     String
+  isValid     Boolean?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderId     Int
+  order       Order    @relation(fields: [orderId], references: [orderId])
+}
+
+model Admin {
+  adminId     Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  email       String   @unique
+  password    String
+  isSuperAdmin Boolean
+  isDeleted   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews     Review[]
+}
+
+
+model Review {
+  reviewId    Int      @id @default(autoincrement())
+  rating      Int
+  comment     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderId     Int      @unique
+  order       Order    @relation(fields: [orderId], references: [orderId])
+
+  adminId     Int
+  admin       Admin    @relation(fields: [adminId], references: [adminId])
+}
+
+

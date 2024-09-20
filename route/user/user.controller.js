@@ -13,6 +13,7 @@ const router = express.Router();
 // Fetch all users
 router.get("/", async (req, res) => {
     try {
+
         const users = await fetchAllUsers();
         res.status(200).send({
             message: "success",
@@ -30,6 +31,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const userId = req.params.id;
+        if (isNaN(userId)) return res.status(400).send({ error: "bad request" })
         const user = await fetchUserById(userId);
         if (user) {
             res.status(200).send({

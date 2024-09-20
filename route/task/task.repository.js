@@ -1,50 +1,40 @@
-// task.repository.js
+// tracking.repository.js
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getAllTasks = async () => {
-    return await prisma.task.findMany(
-        {
-            include: {
-                vendor: { select: { name: true } },
-                pole: { select: { type: true } },
-                status: { select: { status: true } },
-                location: { select: { name: true } },
-                driver: { select: { name: true } },
-            },
-        }
-    );
+    return await prisma.tracking.findMany();
 };
 
 const getTaskById = async (id) => {
-    return await prisma.task.findUnique({
-        where: { id: Number(id) },
+    return await prisma.tracking.findUnique({
+        where: { trackingId: Number(id) },
     });
 };
 
-const createTask = async (taskData) => {
-    return await prisma.task.create({
-        data: taskData,
+const createTask = async (trackingData) => {
+    return await prisma.tracking.create({
+        data: trackingData,
     });
 };
 
 
 const deleteTaskById = async (id) => {
-    return await prisma.task.delete({
+    return await prisma.tracking.delete({
         where: { id: Number(id) },
     });
 };
 
-const editTaskById = async (id, taskData) => {
+const editTaskById = async (id, trackingData) => {
     try {
-        const updatedTask = await prisma.task.update({
+        const updatedTask = await prisma.tracking.update({
             where: { id: Number(id) },
-            data: taskData,
+            data: trackingData,
         });
         return updatedTask;
     } catch (error) {
-        console.error("Error updating task:", error);
-        throw new Error("Unable to update task.");
+        console.error("Error updating tracking:", error);
+        throw new Error("Unable to update tracking.");
     }
 };
 

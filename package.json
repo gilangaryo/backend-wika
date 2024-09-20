@@ -9,7 +9,8 @@
     "start": "node index.js",
     "build": "npm install",
     "postinstall": "prisma generate",
-    "buildku": "npm install && prisma migrate dev && prisma db seed"
+    "buildku": "npm install && prisma migrate dev && prisma db seed",
+    "seed": "node prisma/seed.js"
   },
   "author": "",
   "license": "ISC",

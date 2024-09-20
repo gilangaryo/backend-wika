@@ -2,136 +2,105 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    // Create some Users
+    // Seed Users
     const user1 = await prisma.user.create({
         data: {
-            name: 'Alice',
-            role: 'admin',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+            phone: '1234567890',
+            role: 'user',
+            password: 'hashed_password',  // Ideally, passwords should be hashed.
         },
     });
 
     const user2 = await prisma.user.create({
         data: {
-            name: 'Bob',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane.smith@example.com',
+            phone: '0987654321',
             role: 'user',
+            password: 'hashed_password', // Ideally, passwords should be hashed.
         },
     });
 
-    // Create some Vendors
+    // Seed Admins
+    const admin1 = await prisma.admin.create({
+        data: {
+            name: 'SuperAdmin',
+            phone: '111222333',
+            email: 'superadmin@example.com',
+            password: 'hashed_password',  // Password should be hashed
+            isSuperAdmin: true,
+        },
+    });
+
+    // Seed Vendors
     const vendor1 = await prisma.vendor.create({
         data: {
-            name: 'Marko CV',
+            name: 'Vendor One',
+            email: 'vendor1@example.com',
+            phone: '1231231234',
+            description: 'Vendor for electrical products',
+            location: 'New York',
         },
     });
 
-    const vendor2 = await prisma.vendor.create({
-        data: {
-            name: 'Vendor B',
-        },
-    });
-
-    // Create some Drivers
+    // Seed Drivers
     const driver1 = await prisma.driver.create({
         data: {
-            name: 'John Doe',
-            plate: 'AB 1902 XG',
-            vendorId: vendor1.id,
+            name: 'Driver One',
+            email: 'driver1@example.com',
+            phone: '5554443333',
+            password: 'hashed_password',
+            licensePlate: 'ABC-1234',
+            vendor: { connect: { vendorId: vendor1.vendorId } },
         },
     });
 
-    const driver2 = await prisma.driver.create({
+    // Seed Orders
+    const order1 = await prisma.order.create({
         data: {
-            name: 'Jane Doe',
-            plate: 'XY 2456 HG',
-            vendorId: vendor2.id,
+            description: 'Order for 10 poles',
+            vendor: { connect: { vendorId: vendor1.vendorId } },
+            driver: { connect: { driverId: driver1.driverId } },
         },
     });
 
-    // Create some Poles
+    // Seed Poles
     const pole1 = await prisma.pole.create({
         data: {
-            type: 'LK0282',
-            productNumber: '00142822',
-            manufacturingDate: new Date('2022-08-28'),
-            barcode: 'barcode189279',
+            type: 'Electrical',
+            uniqueCode: 'POLE001',
+            numberProduct: 10,
+            order: { connect: { orderId: order1.orderId } },
         },
     });
 
-    const pole2 = await prisma.pole.create({
+    // Seed Tracking
+    // Seed Tracking
+    const tracking1 = await prisma.tracking.create({
         data: {
-            type: 'AAA002',
-            productNumber: '00142823',
-            manufacturingDate: new Date('2021-06-15'),
-            barcode: 'barcode189280',
+            status: 'In Transit',
+            description: 'Shipment is on its way',
+            latitude: 40.712776,
+            longitude: -74.005974,
+            licensePlate: driver1.licensePlate,
+            picture: 'shipment.jpg',  // Add a value for picture here
+            order: { connect: { orderId: order1.orderId } },
         },
     });
 
-    // Create some Locations
-    const location1 = await prisma.location.create({
-        data: {
-            name: 'UP3 Ponorogo',
-            latitude: '0.0',
-            longitude: '0.0',
-        },
-    });
 
-    const location2 = await prisma.location.create({
-        data: {
-            name: 'UP3 Madiun',
-            latitude: '1.1',
-            longitude: '1.1',
-        },
-    });
-
-    // Create some Statuses
-    const status1 = await prisma.status.create({
-        data: {
-            status: 'pending',
-        },
-    });
-
-    const status2 = await prisma.status.create({
-        data: {
-            status: 'completed',
-        },
-    });
-
-    // Create some Tasks
-    const task1 = await prisma.task.create({
-        data: {
-            name: 'Pole Inspection',
-            photoUrl: 'http://example.com/photo1.jpg',
-            date: new Date(),
-            statusId: status1.id,
-            poleId: pole1.id,
-            locationId: location1.id,
-            vendorId: vendor1.id,
-            driverId: driver1.id,
-        },
-    });
-
-    const task2 = await prisma.task.create({
-        data: {
-            name: 'Pole Maintenance',
-            photoUrl: 'http://example.com/photo2.jpg',
-            date: new Date(),
-            statusId: status2.id,
-            poleId: pole2.id,
-            locationId: location2.id,
-            vendorId: vendor2.id,
-            driverId: driver2.id,
-        },
-    });
-
-    console.log({ user1, user2, vendor1, vendor2, driver1, driver2, pole1, pole2, location1, location2, status1, status2, task1, task2 });
+    console.log('Seed data created!');
 }
 
 main()
-    .then(async () => {
-        await prisma.$disconnect();
-    })
-    .catch(async (e) => {
+    .catch((e) => {
         console.error(e);
-        await prisma.$disconnect();
         process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
     });
